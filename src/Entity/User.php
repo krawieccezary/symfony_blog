@@ -4,17 +4,19 @@ namespace App\Entity;
 
 use App\Repository\DoctrineUserRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: DoctrineUserRepository::class)]
 #[ORM\Table(name: '`user`')]
-class User implements UserInterface
+class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     const ROLE_USER = 'ROLE_USER';
 
     #[ORM\Id]
-    #[ORM\Column(type: 'string')]
-    private string $id;
+    #[ORM\Column(type: 'uuid')]
+    private Uuid $id;
 
     #[ORM\Column(type: 'string', length: 255)]
     private string $name;
@@ -34,12 +36,12 @@ class User implements UserInterface
     #[ORM\Column(type: 'json')]
     private array $roles;
 
-    public function getId(): ?int
+    public function getId(): Uuid
     {
         return $this->id;
     }
 
-    public function setId(string $id): self
+    public function setId(Uuid $id): self
     {
         $this->id = $id;
 

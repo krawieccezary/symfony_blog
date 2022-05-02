@@ -4,6 +4,8 @@ namespace App\Controller;
 
 use App\Command\CommandBusInterface;
 use App\Command\User\CreateUserCommand;
+use App\Form\NewUserType;
+use App\Service\CreateUser\CreateUserModel;
 use App\Util\UuidGeneratorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -18,21 +20,34 @@ class UserController extends AbstractController
     ) {
     }
 
-    #[Route('/user-create', name: 'user_create', methods: ['GET', 'POST'])]
+    #[Route('/admin/user/create', name: 'user_create', methods: ['GET', 'POST'])]
     public function index(Request $request): Response
     {
-        try {
-            $id = $this->uuidGenerator->generate();
+        $userModel = new CreateUserModel();
+        $form = $this->createForm(NewUserType::class, $userModel);
+        $form->handleRequest($request);
 
-            $this->commandBus->dispatch(
-                new CreateUserCommand($id)
-            );
-        } catch (\Exception $exception) {
-            return new Response($exception->getMessage());
+        if ($form->isSubmitted() && !$form->isValid()) {
+            throw new \Exception('Niestety nie udało się stworzyć nowego użytkownika.');
         }
 
-        return $this->render('user/index.html.twig', [
-            'controller_name' => 'UserController',
+        if ($form->isSubmitted() && $form->isValid()) {
+            try {
+                $id = $this->uuidGenerator->generate();
+                $userModel->setId($id);
+                $userModel->setRoles(['USER_ROLE']);
+
+                $this->commandBus->dispatch(
+                    new CreateUserCommand($userModel)
+                );
+            } catch (\Exception $exception) {
+                return new Response($exception->getMessage());
+            }
+        }
+
+
+        return $this->renderForm('admin/user.html.twig', [
+            'form' => $form
         ]);
     }
 }
