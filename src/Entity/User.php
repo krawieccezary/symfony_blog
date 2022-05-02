@@ -2,17 +2,19 @@
 
 namespace App\Entity;
 
-use App\Repository\UserRepository;
+use App\Repository\DoctrineUserRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\UserInterface;
 
-#[ORM\Entity(repositoryClass: UserRepository::class)]
+#[ORM\Entity(repositoryClass: DoctrineUserRepository::class)]
 #[ORM\Table(name: '`user`')]
-class User
+class User implements UserInterface
 {
+    const ROLE_USER = 'ROLE_USER';
+
     #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
-    private $id;
+    #[ORM\Column(type: 'string')]
+    private string $id;
 
     #[ORM\Column(type: 'string', length: 255)]
     private string $name;
@@ -29,9 +31,19 @@ class User
     #[ORM\Column(type: 'string', length: 255)]
     private string $password;
 
+    #[ORM\Column(type: 'json')]
+    private array $roles;
+
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function setId(string $id): self
+    {
+        $this->id = $id;
+
+        return $this;
     }
 
     public function getName(): string
@@ -92,5 +104,34 @@ class User
         $this->password = $password;
 
         return $this;
+    }
+
+    public function getUserIdentifier(): string
+    {
+        return (string)$this->email;
+    }
+
+    public function getRoles(): array
+    {
+        $roles = $this->roles;
+        // guarantee every user at least has ROLE_USER
+        $roles[] = self::ROLE_USER;
+
+        return array_unique($roles);
+    }
+
+    public function setRoles(array $roles): self
+    {
+        $this->roles = $roles;
+
+        return $this;
+    }
+
+    public function eraseCredentials(): array
+    {
+        $roles = $this->roles;
+        $roles[] = self::ROLE_USER;
+
+        return array_unique($roles);
     }
 }
