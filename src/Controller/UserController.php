@@ -24,33 +24,33 @@ class UserController extends AbstractController
     }
 
     #[Route('/api/users', name: 'api_user_create', methods: ['POST'])]
-    public function createUsers(Request $request): Response
+    public function createUser(Request $request): Response
     {
-        $userModel = new CreateUserModel();
-        $form = $this->createForm(NewUserType::class, $userModel);
-        $form->handleRequest($request);
+        $parameters = json_decode($request->getContent(), true);
 
-        if ($form->isSubmitted() && !$form->isValid()) {
-            throw new \Exception('Niestety nie udało się stworzyć nowego użytkownika.');
+        if (!$parameters) {
+            throw new \InvalidArgumentException();
         }
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            try {
-                $id = $this->uuidGenerator->generate();
-                $userModel->setId($id);
-                $userModel->setRoles(['USER_ROLE']);
+        try {
+            $id = $this->uuidGenerator->generate();
+            $userModel = new CreateUserModel();
+            $userModel
+                ->setId($id)
+                ->setUsername($parameters['username'])
+                ->setName($parameters['name'])
+                ->setSurname($parameters['surname'])
+                ->setEmail($parameters['email'])
+                ->setPlainPassword($parameters['plainPassword'])
+                ->setRoles(['USER_ROLE']);
 
-                $this->commandBus->dispatch(new CreateUserCommand($userModel));
-            } catch (\Exception $exception) {
-                return new Response($exception->getMessage());
-            }
-        };
+            $this->commandBus->dispatch(new CreateUserCommand($userModel));
 
-        return $this->renderForm('admin/user.html.twig', [
-            'form' => $form
-        ]);
+            return $this->redirectToRoute('api_users');
+        } catch (\Exception $exception) {
+            return new Response($exception->getMessage());
+        }
     }
-
 
     #[Route('/api/users', name: 'api_users', methods: ['GET'])]
     public function getUsers(): Response
@@ -59,34 +59,4 @@ class UserController extends AbstractController
         return $this->json($users);
     }
 
-//    #[Route('/admin/user/create', name: 'user_create', methods: ['GET', 'POST'])]
-//    public function index(Request $request): Response
-//    {
-//        $userModel = new CreateUserModel();
-//        $form = $this->createForm(NewUserType::class, $userModel);
-//        $form->handleRequest($request);
-//
-//        if ($form->isSubmitted() && !$form->isValid()) {
-//            throw new \Exception('Niestety nie udało się stworzyć nowego użytkownika.');
-//        }
-//
-//        if ($form->isSubmitted() && $form->isValid()) {
-//            try {
-//                $id = $this->uuidGenerator->generate();
-//                $userModel->setId($id);
-//                $userModel->setRoles(['USER_ROLE']);
-//
-//                $this->commandBus->dispatch(
-//                    new CreateUserCommand($userModel)
-//                );
-//            } catch (\Exception $exception) {
-//                return new Response($exception->getMessage());
-//            }
-//        }
-//
-//
-//        return $this->renderForm('admin/user.html.twig', [
-//            'form' => $form
-//        ]);
-//    }
 }

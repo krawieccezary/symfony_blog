@@ -21,9 +21,7 @@ final class Version20220502154136 extends AbstractMigration
     {
         // this up() migration is auto-generated, please modify it to your needs
         $this->addSql('ALTER TABLE "user" ADD roles JSON NOT NULL');
-//        $this->addSql('ALTER TABLE "user" ALTER id TYPE UUID');
         $this->addSql('ALTER TABLE "user" ALTER id DROP DEFAULT');
-//        $this->addSql('COMMENT ON COLUMN "user".id IS \'(DC2Type:uuid)\'');
         $this->addSql('ALTER TABLE "user" ALTER COLUMN id TYPE uuid USING id::uuid');
     }
 
