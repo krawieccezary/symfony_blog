@@ -46,4 +46,9 @@ class DoctrineUserRepository extends ServiceEntityRepository implements UserRepo
             $this->_em->flush();
         }
     }
+
+    public function getUsers(): array
+    {
+        return $this->findAll();
+    }
 }

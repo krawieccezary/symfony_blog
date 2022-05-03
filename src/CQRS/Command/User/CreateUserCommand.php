@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Command\User;
+namespace App\CQRS\Command\User;
 
-use App\Command\CommandInterface;
+use App\CQRS\Command\CommandInterface;
 use App\Service\CreateUser\CreateUserModel;
 use Symfony\Component\Uid\Uuid;
 

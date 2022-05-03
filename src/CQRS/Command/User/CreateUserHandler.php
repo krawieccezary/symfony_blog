@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Command\User;
+namespace App\CQRS\Command\User;
 
 use App\Entity\User;
 use App\Repository\UserRepositoryInterface;
