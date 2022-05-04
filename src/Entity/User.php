@@ -39,7 +39,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private array $roles;
 
     #[ORM\OneToMany(mappedBy: 'author', targetEntity: Post::class)]
-    private ArrayCollection $posts;
+    private Collection $posts;
 
     public function __construct()
     {
@@ -147,9 +147,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return array_unique($roles);
     }
 
-    /**
-     * @return Collection<int, Post>
-     */
     public function getPosts(): Collection
     {
         return $this->posts;

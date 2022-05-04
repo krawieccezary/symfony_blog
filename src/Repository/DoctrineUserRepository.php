@@ -7,6 +7,7 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\Uid\Uuid;
 
 /**
  * @extends ServiceEntityRepository<User>
@@ -50,5 +51,17 @@ class DoctrineUserRepository extends ServiceEntityRepository implements UserRepo
     public function getUsers(): array
     {
         return $this->findAll();
+    }
+
+    public function getUser(Uuid $id): User
+    {
+        $qb = $this->createQueryBuilder('u');
+
+        return $this->createQueryBuilder('u')
+            ->where(
+                $qb->expr()->eq('u.id', $id)
+            )
+            ->getQuery()
+            ->getResult();
     }
 }

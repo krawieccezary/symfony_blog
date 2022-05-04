@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\CQRS\Command\User;
 
 use App\CQRS\Command\CommandInterface;
-use App\Service\CreateUser\CreateUserModel;
+use App\Service\User\CreateUser\CreateUserModel;
 use Symfony\Component\Uid\Uuid;
 
 class CreateUserCommand implements CommandInterface

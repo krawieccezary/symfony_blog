@@ -2,7 +2,7 @@
 
 namespace App\Form;
 
-use App\Service\CreateUser\CreateUserModel;
+use App\Service\User\CreateUser\CreateUserModel;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;

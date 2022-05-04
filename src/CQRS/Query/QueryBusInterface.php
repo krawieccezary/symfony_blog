@@ -8,6 +8,6 @@ use Symfony\Component\Messenger\Envelope;
 
 interface QueryBusInterface
 {
-    public function dispatch(QueryInterface $query): array;
+    public function query(QueryInterface $query): array;
 
 }

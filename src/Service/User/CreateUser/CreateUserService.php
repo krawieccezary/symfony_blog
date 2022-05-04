@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Service\CreateUser;
+namespace App\Service\User\CreateUser;
 
 use App\Entity\User;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
