@@ -6,13 +6,14 @@ use App\CQRS\Command\CommandBusInterface;
 use App\CQRS\Command\User\CreateUserCommand;
 use App\CQRS\Query\QueryBusInterface;
 use App\CQRS\Query\User\GetUsersQuery;
-use App\Form\NewUserType;
 use App\Service\CreateUser\CreateUserModel;
 use App\Util\UuidGeneratorInterface;
+use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+
 
 class UserController extends AbstractController
 {
@@ -21,6 +22,20 @@ class UserController extends AbstractController
         private QueryBusInterface $queryBus,
         private UuidGeneratorInterface $uuidGenerator
     ) {
+    }
+
+    #[OA\Get(
+        path: '/api/users',
+        responses: [
+            new OA\Response(response: 200, description: 'Sukces'),
+            new OA\Response(response: 401, description: 'Nie znaleziono'),
+        ]
+    )]
+    #[Route('/api/users', name: 'api_users', methods: ['GET'])]
+    public function getUsers(): Response
+    {
+        $users = $this->queryBus->dispatch(new GetUsersQuery());
+        return $this->json($users);
     }
 
     #[Route('/api/users', name: 'api_user_create', methods: ['POST'])]
@@ -42,7 +57,7 @@ class UserController extends AbstractController
                 ->setSurname($parameters['surname'])
                 ->setEmail($parameters['email'])
                 ->setPlainPassword($parameters['plainPassword'])
-                ->setRoles(['USER_ROLE']);
+                ->setRoles();
 
             $this->commandBus->dispatch(new CreateUserCommand($userModel));
 
@@ -50,13 +65,6 @@ class UserController extends AbstractController
         } catch (\Exception $exception) {
             return new Response($exception->getMessage());
         }
-    }
-
-    #[Route('/api/users', name: 'api_users', methods: ['GET'])]
-    public function getUsers(): Response
-    {
-        $users = $this->queryBus->dispatch(new GetUsersQuery());
-        return $this->json($users);
     }
 
 }
