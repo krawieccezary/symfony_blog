@@ -2,11 +2,11 @@
 
 namespace App\Entity;
 
-use App\Repository\PostRepository;
+use App\Repository\DoctrinePostRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Uid\Uuid;
 
-#[ORM\Entity(repositoryClass: PostRepository::class)]
+#[ORM\Entity(repositoryClass: DoctrinePostRepository::class)]
 class Post
 {
     #[ORM\Id]
