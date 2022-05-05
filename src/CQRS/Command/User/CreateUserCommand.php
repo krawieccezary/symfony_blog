@@ -10,23 +10,28 @@ use Symfony\Component\Uid\Uuid;
 
 class CreateUserCommand implements CommandInterface
 {
-    private Uuid $id;
-    private string $username;
-    private string $name;
-    private string $surname;
-    private string $email;
-    private string $plainPassword;
-    private array $roles;
+    public function __construct(
+        private Uuid $id,
+        private string $username,
+        private string $name,
+        private string $surname,
+        private string $email,
+        private string $plainPassword,
+        private array $roles,
+    ) {
+    }
 
-    public function __construct(CreateUserModel $createUserModel)
+    public static function createFromArray(array $parameters): self
     {
-        $this->id = $createUserModel->getId();
-        $this->username = $createUserModel->getUsername();
-        $this->name = $createUserModel->getName();
-        $this->surname = $createUserModel->getSurname();
-        $this->email = $createUserModel->getEmail();
-        $this->plainPassword = $createUserModel->getPlainPassword();
-        $this->roles = $createUserModel->getRoles();
+        return new CreateUserCommand(
+            $parameters['id'],
+            $parameters['username'],
+            $parameters['name'],
+            $parameters['surname'],
+            $parameters['email'],
+            $parameters['plainPassword'],
+            $parameters['roles']
+        );
     }
 
     public function getId(): Uuid

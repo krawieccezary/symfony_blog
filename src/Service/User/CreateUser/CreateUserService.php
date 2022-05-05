@@ -5,15 +5,18 @@ declare(strict_types=1);
 namespace App\Service\User\CreateUser;
 
 use App\Entity\User;
+use App\Repository\UserRepositoryInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class CreateUserService
 {
-    public function __construct(private UserPasswordHasherInterface $passwordHasher)
-    {
+    public function __construct(
+        private UserRepositoryInterface $userRepository,
+        private UserPasswordHasherInterface $passwordHasher
+    ) {
     }
 
-    public function create(CreateUserModel $createUserModel): User
+    public function create(CreateUserModel $createUserModel): void
     {
         $user = new User();
         $user
@@ -28,8 +31,8 @@ class CreateUserService
                     $createUserModel->getPlainPassword()
                 )
             )
-            ->setRoles($createUserModel->getRoles());
+            ->setRoles(User::ROLE_USER);
 
-        return $user;
+        $this->userRepository->save($user);
     }
 }

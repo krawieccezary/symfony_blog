@@ -89,6 +89,14 @@ class Post
         return $this;
     }
 
+    public function isAuthor(User $user): bool
+    {
+        return (
+            $user === $this->getAuthor()
+            && $user->isAdmin()
+        );
+    }
+
     public function getAuthor(): User
     {
         return $this->author;

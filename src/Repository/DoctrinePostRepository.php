@@ -3,10 +3,12 @@
 namespace App\Repository;
 
 use App\Entity\Post;
+use App\Type\MyUuid;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\Uid\Uuid;
 
 /**
  * @extends ServiceEntityRepository<Post>
@@ -46,5 +48,32 @@ class DoctrinePostRepository extends ServiceEntityRepository implements PostRepo
             $this->_em->flush();
         }
     }
-    
+
+    public function removeById(MyUuid $id): void
+    {
+        $qb = $this->_em->createQueryBuilder();
+        $qb->delete('Post', 'p');
+        $qb->where('p.id = :id');
+        $qb->setParameter('id', $id);
+    }
+
+    public function getPosts(): array
+    {
+        return $this->findAll();
+    }
+
+    public function getPost(Uuid $id): Post
+    {
+        $conn = $this->getEntityManager()->getConnection();
+
+        $sql = '
+            SELECT * FROM post p
+            WHERE p.id = :id
+            ';
+        $stmt = $conn->prepare($sql);
+        $resultSet = $stmt->executeQuery(['id' => $id]);
+
+        return $resultSet->fetchAllAssociative();
+    }
+
 }

@@ -6,26 +6,29 @@ namespace App\CQRS\Command\Post;
 
 use App\CQRS\Command\CommandInterface;
 use App\Entity\User;
-use App\Service\Post\CreatePost\CreatePostModel;
 use Symfony\Component\Uid\Uuid;
 
 class CreatePostCommand implements CommandInterface
 {
-    private Uuid $id;
-    private string $title;
-    private string $content;
-    private \DateTimeImmutable $createdAt;
-    private bool $active;
-    private User $author;
 
-    public function __construct(CreatePostModel $createPostModel)
+    public function __construct(
+        private Uuid $id,
+        private string $title,
+        private string $content,
+        private bool $active,
+        private User $author,
+    ) {
+    }
+
+    public static function createFromArray(array $parameters): self
     {
-        $this->id = $createPostModel->getId();
-        $this->title = $createPostModel->getTitle();
-        $this->content = $createPostModel->getContent();
-        $this->createdAt = $createPostModel->getCreatedAt();
-        $this->active = $createPostModel->isActive();
-        $this->author = $createPostModel->getAuthor();
+        return new CreatePostCommand(
+            $parameters['id'],
+            $parameters['title'],
+            $parameters['content'],
+            $parameters['active'],
+            $parameters['author'],
+        );
     }
 
     public function getId(): Uuid
@@ -43,20 +46,14 @@ class CreatePostCommand implements CommandInterface
         return $this->content;
     }
 
-    public function getCreatedAt(): \DateTimeImmutable
-    {
-        return $this->createdAt;
-    }
-
     public function isActive(): bool
     {
         return $this->active;
     }
-    
+
     public function getAuthor(): User
     {
         return $this->author;
     }
-
 
 }

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Service\Post\CreatePost;
 
 use App\Entity\User;
-use App\Util\UuidGeneratorInterface;
 use Symfony\Component\Uid\Uuid;
 
 class CreatePostModel
@@ -17,18 +16,16 @@ class CreatePostModel
     private bool $active;
     private User $author;
 
-    public function __construct(private UuidGeneratorInterface $uuidGenerator)
-    {
-    }
 
     public static function create(
+        Uuid $id,
         string $title,
         string $content,
         bool $active,
         User $author
     ): self {
         return (new CreatePostModel())
-            ->setId()
+            ->setId($id)
             ->setTitle($title)
             ->setContent($content)
             ->setCreatedAt()
@@ -41,9 +38,8 @@ class CreatePostModel
         return $this->id;
     }
 
-    public function setId(): self
+    public function setId(Uuid $id): self
     {
-        $id = $this->uuidGenerator->generate();
         $this->id = $id;
 
         return $this;
@@ -78,9 +74,9 @@ class CreatePostModel
         return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTimeImmutable $createdAt): self
+    public function setCreatedAt(): self
     {
-        $this->createdAt = (new \DateTimeImmutable)->setTimestamp(time());
+        $this->createdAt = new \DateTimeImmutable();
 
         return $this;
     }
